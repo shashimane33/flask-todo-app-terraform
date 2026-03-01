@@ -1,7 +1,9 @@
 from flask import Flask, json, jsonify, redirect, request, url_for
 import os
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 DATA_FILE = os.path.join(os.path.dirname(__file__), "todo.json")
 
 def read_tasks():
