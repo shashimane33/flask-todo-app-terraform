@@ -27,3 +27,4 @@ variable "backend_image" {
   type    = string
   default = "025380047428.dkr.ecr.ap-south-1.amazonaws.com/flask-app/backend:latest"
 }
+
