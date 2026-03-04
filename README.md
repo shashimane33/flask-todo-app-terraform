@@ -63,7 +63,7 @@ terraform apply -auto-approve
 **Step 3.1: Prepare Remote State**
 1. Log into the AWS Console and create an S3 bucket (e.g., flask-todo-app-bucket).
 
-2. nsure your IAM user has s3:PutObject and s3:GetObject permissions for this bucket.
+2. Ensure your IAM user has s3:PutObject and s3:GetObject permissions for this bucket.
 
 **Step 3.2: Push Docker Images to ECR**
 Before running the main infrastructure, you must manually push the application images to AWS ECR.
