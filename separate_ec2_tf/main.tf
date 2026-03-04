@@ -22,9 +22,9 @@ resource "aws_vpc" "myvpc" {
 
 # Create subnet
 resource "aws_subnet" "sub-frontend" {
-  vpc_id     = aws_vpc.myvpc.id
-  cidr_block = "10.0.1.0/24"
-  availability_zone = "ap-south-1a"
+  vpc_id                  = aws_vpc.myvpc.id
+  cidr_block              = "10.0.1.0/24"
+  availability_zone       = "ap-south-1a"
   map_public_ip_on_launch = true
 
   tags = {
@@ -32,9 +32,9 @@ resource "aws_subnet" "sub-frontend" {
   }
 }
 resource "aws_subnet" "sub-backend" {
-  vpc_id     = aws_vpc.myvpc.id
-  cidr_block = "10.0.2.0/24"
-  availability_zone = "ap-south-1b"
+  vpc_id                  = aws_vpc.myvpc.id
+  cidr_block              = "10.0.2.0/24"
+  availability_zone       = "ap-south-1b"
   map_public_ip_on_launch = true
 
   tags = {
@@ -74,62 +74,62 @@ resource "aws_security_group" "sg1" {
   tags = {
     Name = "sg1"
   }
-} 
+}
 # ingress - egress
 resource "aws_vpc_security_group_ingress_rule" "frontend-ig" {
   security_group_id = aws_security_group.sg1.id
-  cidr_ipv4   = var.cidr_all_ipv4
-  from_port   = 3000
-  ip_protocol = "tcp"
-  to_port     = 3000
+  cidr_ipv4         = var.cidr_all_ipv4
+  from_port         = 3000
+  ip_protocol       = "tcp"
+  to_port           = 3000
 }
 resource "aws_vpc_security_group_ingress_rule" "backend-ig" {
   security_group_id = aws_security_group.sg1.id
-  cidr_ipv4   = var.cidr_all_ipv4
-  from_port   = 5000
-  ip_protocol = "tcp"
-  to_port     = 5000
+  cidr_ipv4         = var.cidr_all_ipv4
+  from_port         = 5000
+  ip_protocol       = "tcp"
+  to_port           = 5000
 }
 resource "aws_vpc_security_group_ingress_rule" "ssh-ig" {
   security_group_id = aws_security_group.sg1.id
-  cidr_ipv4   = var.cidr_all_ipv4
-  from_port   = 22
-  ip_protocol = "tcp"
-  to_port     = 22
+  cidr_ipv4         = var.cidr_all_ipv4
+  from_port         = 22
+  ip_protocol       = "tcp"
+  to_port           = 22
 }
 resource "aws_vpc_security_group_egress_rule" "eg" {
   security_group_id = aws_security_group.sg1.id
-  cidr_ipv4   = var.cidr_all_ipv4
-  from_port   = 0
-  ip_protocol = "-1"
-  to_port     = 0
+  cidr_ipv4         = var.cidr_all_ipv4
+  from_port         = 0
+  ip_protocol       = "-1"
+  to_port           = 0
 }
 
 # ec2
-resource "aws_instance" "backend-ec2" {
-  ami           = var.ubuntu_ami
-  instance_type = "t3.micro"
+resource "aws_instance" "backend-server" {
+  ami                    = var.ubuntu_ami
+  instance_type          = "t3.micro"
   vpc_security_group_ids = [aws_security_group.sg1.id]
-  subnet_id = aws_subnet.sub-backend.id
-  key_name = var.key_pair_name
-  user_data = file("backend_setup.sh")
+  subnet_id              = aws_subnet.sub-backend.id
+  key_name               = var.key_pair_name
+  user_data              = file("backend_setup.sh")
 
   tags = {
-    Name = "backend-ec2"
+    Name = "backend-server"
   }
 }
-resource "aws_instance" "frontend-ec2" {
-  ami           = var.ubuntu_ami
-  instance_type = "t3.micro"
+resource "aws_instance" "frontend-server" {
+  ami                    = var.ubuntu_ami
+  instance_type          = "t3.micro"
   vpc_security_group_ids = [aws_security_group.sg1.id]
-  subnet_id = aws_subnet.sub-frontend.id
-  key_name = var.key_pair_name
+  subnet_id              = aws_subnet.sub-frontend.id
+  key_name               = var.key_pair_name
   user_data = templatefile("frontend_setup.sh", {
-    backend_ip = aws_instance.backend-ec2.public_ip
-    })
-  depends_on = [ aws_instance.backend-ec2 ]
+    backend_ip = aws_instance.backend-server.public_ip
+  })
+  depends_on = [aws_instance.backend-server]
 
   tags = {
-    Name = "frontend-ec2"
+    Name = "frontend-server"
   }
 }
